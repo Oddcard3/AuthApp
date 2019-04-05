@@ -1,0 +1,41 @@
+1. /auth/login
+
+Request:
+{
+  "data": {
+    "type": "logins",
+    "id": "134",
+    "attributes": {
+    	"login": "user",
+		"password": "123456"
+    }
+  }
+}
+
+Response:
+{
+    "data": {
+        "type": " tokens",
+        "id": "0",
+        "attributes": {
+            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAxOS0wNC0wNFQxNzo1OToxNC4yNTAxNjE5KzA1OjAwIiwidXNlcl9pZCI6InVzZXIifQ.0sBQhOq8KU_8Cdy9bGbriMmd_lGUdAVd5ztK7xqBsHg"
+        }
+    }
+}
+
+2. /auth/logout
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAxOS0wNC0wNFQxMzoyNjoyNy40NzEwMzU3KzA1OjAwIiwidXNlcl9pZCI6InVzZXIifQ.UXbKfk1j4P_EVqAjS0MQqrsCfEeTf3_YVXaEeAQNqFs
+
+200 OK
+
+304 or 500
+
+3. /api/post/all
+{"data":{"type":"posts","id":"1","attributes":{"items":[{"ID":"1","Title":"Go became most popular language","Body":"According to stackoverflow requests statistics Go is most popular language in the world"},{"ID":"2","Title":"Barselona won Real Madrid","Body":"Score is 3:0, Messi made hat trick!"},{"ID":"3","Title":"Navalny is arrested again","Body":"The opposition politician has been arrested during illegal meeting in the center of Moscow"},{"ID":"55","Title":"Go became most popular language","Body":"According to stackoverflow requests statistics Go is most popular language in the world"}]}}}
+
+4. GET /api/post/1
+{"data":{"type":"post","id":"1","attributes":{"body":"According to stackoverflow requests statistics Go is most popular language in the world","title":"Go became most popular language"}}}
+
+5. POST /api/post/55
+{"data":{"type":"post","id":"1","attributes":{"body":"According to stackoverflow requests statistics Go is most popular language in the world","title":"Go became most popular language"}}}
+
