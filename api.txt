@@ -1,26 +1,18 @@
 1. /auth/login
 
 Request:
-{
-  "data": {
-    "type": "logins",
-    "id": "134",
-    "attributes": {
-    	"login": "user",
-		"password": "123456"
-    }
-  }
-}
+{"login": "user", "password": "123456"}
 
 Response:
+1. Successful
 {
-    "data": {
-        "type": " tokens",
-        "id": "0",
-        "attributes": {
-            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAxOS0wNC0wNFQxNzo1OToxNC4yNTAxNjE5KzA1OjAwIiwidXNlcl9pZCI6InVzZXIifQ.0sBQhOq8KU_8Cdy9bGbriMmd_lGUdAVd5ztK7xqBsHg"
-        }
-    }
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHBpcmVkIjoiMjAxOS0wNC0wNlQxNjoyODoxMy4xNTY2MTU5KzA1OjAwIiwidXNlcl9pZCI6InVzZXIifQ.zl7iHswJLNXnpoI_oB-idlsBf8NT142PXknUP_7F9lo"
+}
+
+2. Failure:
+{
+    "error": 100,
+    "message": "Incorrect login or password"
 }
 
 2. /auth/logout

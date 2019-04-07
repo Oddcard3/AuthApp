@@ -4,6 +4,7 @@ import (
 	jwttoken "authapp/auth/jwt"
 	"authapp/models/sessions"
 	"authapp/models/users"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,18 +12,20 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
-	"github.com/google/jsonapi"
 )
 
-type loginRequest struct {
-	ID       int    `jsonapi:"primary,logins"`
-	Login    string `jsonapi:"attr,login"`
-	Password string `jsonapi:"attr,password"`
+type credentials struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
 }
 
-type loginResponse struct {
-	ID    int    `jsonapi:"primary, tokens"`
-	Token string `jsonapi:"attr,token"`
+type sessionToken struct {
+	Token string `json:"token"`
+}
+
+type apiError struct {
+	Code    int    `json:"error"`
+	Message string `json:"message"`
 }
 
 func createSession(login string) (token string, e error) {
@@ -44,41 +47,38 @@ func createSession(login string) (token string, e error) {
 func login(w http.ResponseWriter, r *http.Request) {
 	// TODO: log
 
-	loginReq := new(loginRequest)
-
-	if err := jsonapi.UnmarshalPayload(r.Body, loginReq); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	var req credentials
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.Header().Set("Content-Type", jsonapi.MediaType)
+	w.Header().Set("Content-Type", "application/json")
 
-	u, e := users.Get(loginReq.Login)
+	u, e := users.Get(req.Login)
 	if e != nil {
 		http.Error(w, e.Error(), http.StatusInternalServerError)
 		return
 	}
-	if u == nil || !u.CheckPassword(loginReq.Password) {
-		jsonapi.MarshalErrors(w, []*jsonapi.ErrorObject{{
-			Title:  "Incorrect login or password",
-			Detail: "Incorrect login or password",
-			Status: "400",
-			Meta:   nil,
-		}})
+	if u == nil || !u.CheckPassword(req.Password) {
+		if err = json.NewEncoder(w).Encode(apiError{100, "Incorrect login or password"}); err != nil {
+			http.Error(w, e.Error(), http.StatusInternalServerError)
+		}
 		return
 	}
 
-	token, tokenErr := createSession(loginReq.Login)
+	token, tokenErr := createSession(req.Login)
 	if tokenErr != nil {
 		http.Error(w, tokenErr.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	loginResp := new(loginResponse)
-	loginResp.Token = token
-	if err := jsonapi.MarshalPayload(w, loginResp); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	resp := new(sessionToken)
+	resp.Token = token
+
+	if err = json.NewEncoder(w).Encode(resp); err != nil {
+		http.Error(w, e.Error(), http.StatusInternalServerError)
 	}
 }
 
