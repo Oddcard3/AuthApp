@@ -31,6 +31,7 @@ func NewAppAPI(enableCORS bool) (*chi.Mux, error) {
 	r.Use(middleware.RequestID)
 	// r.Use(middleware.RealIP)
 	r.Use(middleware.DefaultCompress)
+	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.Timeout(15 * time.Second))
 
 	//r.Use(logging.NewStructuredLogger(logger))
@@ -43,6 +44,7 @@ func NewAppAPI(enableCORS bool) (*chi.Mux, error) {
 
 	r.Mount("/auth", AuthRouter())
 	r.Mount("/api/post/", PostsRouter())
+	r.Mount("/api/users", UsersRouter())
 
 	return r, nil
 }
