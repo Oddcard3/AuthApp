@@ -22,9 +22,6 @@ type Server struct {
 // NewServer creates new server
 func NewServer() (*Server, error) {
 	port := viper.GetString("port")
-	if port == "" {
-		port = "8080"
-	}
 	addr := ":" + port
 
 	jwttoken.Init()
