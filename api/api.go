@@ -7,6 +7,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
+
+	"authapp/logging"
 )
 
 func corsConfig() *cors.Cors {
@@ -30,11 +32,13 @@ func NewAppAPI(enableCORS bool) (*chi.Mux, error) {
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RequestID)
 	// r.Use(middleware.RealIP)
-	r.Use(middleware.DefaultCompress)
+	// there is issue with websocket if the compression is enabled
+	// r.Use(middleware.DefaultCompress)
 	r.Use(middleware.RedirectSlashes)
 	r.Use(middleware.Timeout(15 * time.Second))
 
 	//r.Use(logging.NewStructuredLogger(logger))
+	r.Use(logging.NewStructuredLogger(logging.Logger))
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	// use CORS middleware if client is not served by this api, e.g. from other domain or CDN
@@ -45,6 +49,8 @@ func NewAppAPI(enableCORS bool) (*chi.Mux, error) {
 	r.Mount("/auth", AuthRouter())
 	r.Mount("/api/post/", PostsRouter())
 	r.Mount("/api/users", UsersRouter())
+
+	r.Mount("/ws", WebsocketRouter())
 
 	return r, nil
 }

@@ -1,0 +1,5 @@
+[config]
+port=8889
+
+[logger]
+level=debug

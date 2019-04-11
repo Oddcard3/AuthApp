@@ -13,6 +13,7 @@ func Init() {
 	// default values
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("config", "")
+	viper.SetDefault("logger.level", "info")
 
 	//aliases
 	viper.RegisterAlias("port", "config.port")
