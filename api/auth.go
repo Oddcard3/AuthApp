@@ -2,8 +2,8 @@ package api
 
 import (
 	jwttoken "authapp/auth/jwt"
+	"authapp/db/models/users"
 	"authapp/models/sessions"
-	"authapp/models/users"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,9 +36,9 @@ func createSession(login string) (token string, e error) {
 	if e != nil {
 		return
 	}
-	if e = sessions.New(login, tokenString, expiredTs); e != nil {
-		return
-	}
+	// if e = sessions.New(login, tokenString, expiredTs); e != nil {
+	// 	return
+	// }
 
 	token = tokenString
 	return
@@ -56,14 +56,14 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	u, e := users.Get(req.Login)
-	if e != nil {
-		http.Error(w, e.Error(), http.StatusInternalServerError)
+	authOk, err := users.Login(req.Login, req.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	if u == nil || !u.CheckPassword(req.Password) {
+	if !authOk {
 		if err = json.NewEncoder(w).Encode(apiError{100, "Incorrect login or password"}); err != nil {
-			http.Error(w, e.Error(), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
 	}
@@ -78,7 +78,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 	resp.Token = token
 
 	if err = json.NewEncoder(w).Encode(resp); err != nil {
-		http.Error(w, e.Error(), http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 

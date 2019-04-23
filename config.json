@@ -3,6 +3,10 @@
 		"port":"8080"
 	},
 	"logger": {
-		"level":"debug"
+		"level":"debug",
+		"textlogging": true
+	},
+	"db": {
+		"url": "postgres://postgres:postgres@localhost:5432/chatapp?sslmode=disable"
 	}
 }

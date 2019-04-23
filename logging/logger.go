@@ -22,10 +22,23 @@ type StructuredLogger struct {
 	Logger *logrus.Logger
 }
 
+// InitDefaultLogger initializes default logger
+func InitDefaultLogger() {
+	level := viper.GetString("logger.level")
+	if level == "" {
+		level = "error"
+	}
+	l, err := logrus.ParseLevel(level)
+	if err == nil {
+		logrus.SetLevel(l)
+	}
+	fmt.Printf("Log level is %s\n", level)
+}
+
 // NewLogger creates and configures a new logrus Logger.
 func NewLogger() *logrus.Logger {
 	Logger = logrus.New()
-	if viper.GetBool("log_textlogging") {
+	if viper.GetBool("logger.textlogging") {
 		Logger.Formatter = &logrus.TextFormatter{
 			DisableTimestamp: true,
 		}

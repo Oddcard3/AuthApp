@@ -38,7 +38,7 @@ func NewAppAPI(enableCORS bool) (*chi.Mux, error) {
 	r.Use(middleware.Timeout(15 * time.Second))
 
 	//r.Use(logging.NewStructuredLogger(logger))
-	r.Use(logging.NewStructuredLogger(logging.Logger))
+	r.Use(logging.NewStructuredLogger(logging.NewLogger()))
 	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	// use CORS middleware if client is not served by this api, e.g. from other domain or CDN

@@ -8,12 +8,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+
+
 // Init initialize config
 func Init() {
 	// default values
 	viper.SetDefault("port", 8080)
 	viper.SetDefault("config", "")
 	viper.SetDefault("logger.level", "info")
+	viper.SetDefault("db.url", "postgres://postgres:postgres@localhost:5432/chatapp?sslmode=disable")
 
 	//aliases
 	viper.RegisterAlias("port", "config.port")
@@ -28,18 +31,6 @@ func Init() {
 	// env
 	viper.SetEnvPrefix("authapp")
 	viper.BindEnv("port")
-
-	// config file
-	if cfgFilePath := viper.GetString("config"); cfgFilePath != "" {
-		viper.SetConfigFile(cfgFilePath)
-	} else {
-		viper.SetConfigName("config")
-		viper.AddConfigPath("/etc/authapp/")
-		viper.AddConfigPath("$HOME/.authapp")
-		viper.AddConfigPath("./")
-	}
-
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Error reading file %s", err)
-	}
+	
 }
+
