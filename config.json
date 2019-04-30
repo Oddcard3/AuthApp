@@ -1,6 +1,7 @@
 {
 	"config": {
-		"port":"8080"
+		"port":"8080",
+		"uipath":"G://MYOWN//AuthAppUI//dist//AuthAppUI"
 	},
 	"logger": {
 		"level":"debug",

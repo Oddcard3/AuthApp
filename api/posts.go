@@ -34,7 +34,7 @@ func createFakePosts() []*post {
 
 var postList = createFakePosts()
 
-func list(w http.ResponseWriter, r *http.Request) {
+func listHandler(w http.ResponseWriter, r *http.Request) {
 	postsResp := &posts{1, postList}
 	if err := jsonapi.MarshalPayload(w, postsResp); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -85,7 +85,7 @@ func PostsRouter() *chi.Mux {
 	r.Group(func(r chi.Router) {
 		r.Use(jwttoken.GetVerifier())
 		r.Use(jwttoken.AppAuthenticator)
-		r.Get("/all", list)
+		r.Get("/all", listHandler)
 		r.Post("/{postID}", add)
 		r.Get("/{postID}", get)
 	})

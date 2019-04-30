@@ -18,14 +18,17 @@ type Chat struct {
 // conn DB connection
 var conn *sql.DB
 
-// GetMembers gets chat members
-func GetMembers(chatID int) (members []users.User, err error) {
+// GetChat gets chat instance by ID
+func GetChat(chatID int) (chat *Chat, err error) {
 	rows, err := conn.Query("SELECT u.id, u.login FROM chat_members cm, users u WHERE cm.user_id = u.id AND cm.chat_id = $1", chatID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	members = make([]users.User, 0)
+
+	chat = new(Chat)
+	chat.ID = chatID
+	chat.Users = make([]users.User, 0)
 	for rows.Next() {
 		var login string
 		var userID int
@@ -35,9 +38,9 @@ func GetMembers(chatID int) (members []users.User, err error) {
 		var user users.User
 		user.ID = userID
 		user.Login = login
-		members = append(members, user)
+		chat.Users = append(chat.Users, user)
 	}
-	return members, nil
+	return chat, nil
 }
 
 // GetByUser gets chats by user ID
@@ -53,25 +56,18 @@ func GetByUser(userID int) (chats []*Chat, err error) {
 		if err = rows.Scan(&chatID); err != nil {
 			return
 		}
-		chat := new(Chat)
-		chat.ID = chatID
-		chat.Users = make([]users.User, 0)
+		chat, err := GetChat(chatID)
+		if err != nil {
+			return nil, err
+		}
 		chats = append(chats, chat)
 	}
-
-	for _, c := range chats {
-		c.Users, err = GetMembers(c.ID)
-		if err != nil {
-			return
-		}
-	}
-
 	return
 }
 
 // GetLastMessages gets last num messages
 func GetLastMessages(chatID int, num int) (msgList []messages.Message, err error) {
-	rows, err := conn.Query("SELECT id, chat_id, src_user_id, ts, message  FROM messages chat_id = $1", chatID)
+	rows, err := conn.Query("SELECT id, chat_id, src_user_id, ts, message FROM messages WHERE chat_id=$1 ORDER BY ts DESC LIMIT 100", chatID)
 	if err != nil {
 		return nil, err
 	}
@@ -98,8 +94,16 @@ func SearchMessagesForUser(userID int, text string) ([]messages.Message, error) 
 }
 
 // AddMessage adds message to chat
-func AddMessage(chatID int, msg messages.Message) (*messages.Message, error) {
-	return nil, nil
+func AddMessage(msg *messages.Message) error {
+	query :=
+		`INSERT INTO messages VALUES (
+		$1,
+		$2,
+		$3,
+		NOW(),
+		$4)`
+	_, err := conn.Exec(query, msg.ID, msg.ChatID, msg.Creator, msg.Text)
+	return err
 }
 
 // Create creates new chat

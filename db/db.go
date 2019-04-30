@@ -88,7 +88,7 @@ func Create() (err error) {
 
 	query = `
 		CREATE TABLE IF NOT EXISTS messages (
-			id serial primary key,
+			id text primary key,
 			chat_id integer REFERENCES chats (id),
 			src_user_id integer REFERENCES users (id),
 			ts timestamp not null,
@@ -180,33 +180,6 @@ func FillTestData() (err error) {
 		log.WithFields(log.Fields{"err": err}).Error("Failed to add user to chat")
 		return
 	}
-	// query := `
-	// 	INSERT INTO users VALUES (
-	// 		nextval('users_id_seq'),
-	// 		$1,
-	// 		'',
-	// 		'',
-	// 		'',
-	// 		'stalone123',
-	// 		'',
-	// 		NOW(),
-	// 		TRUE);
-	// 	INSERT INTO users VALUES (
-	// 		nextval('users_id_seq'),
-	// 		$2,
-	// 		'',
-	// 		'',
-	// 		'',
-	// 		'arnold123',
-	// 		'',
-	// 		NOW(),
-	// 		TRUE);`
-
-	// _, err = conn.Exec(query, user1, user2)
-	// if err != nil {
-	// 	log.WithFields(log.Fields{"err": err}).Error("Failed to create test users")
-	// 	return
-	// }
 
 	return
 }

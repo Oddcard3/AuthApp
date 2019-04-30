@@ -47,6 +47,7 @@ func init() {
 	viper.SetDefault("config", "")
 	viper.SetDefault("logger.level", "info")
 	viper.SetDefault("db.url", "postgres://postgres:postgres@localhost:5432/chatapp?sslmode=disable")
+	viper.SetDefault("config.uipath", "./AuthAppUI")
 }
 
 func initConfig() {

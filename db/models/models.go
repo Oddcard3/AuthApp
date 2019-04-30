@@ -1,6 +1,7 @@
 package models
 
 import (
+	"authapp/db/models/chats"
 	"authapp/db/models/users"
 	"database/sql"
 )
@@ -8,4 +9,5 @@ import (
 // SetConn sets DB connection
 func SetConn(c *sql.DB) {
 	users.SetConn(c)
+	chats.SetConn(c)
 }

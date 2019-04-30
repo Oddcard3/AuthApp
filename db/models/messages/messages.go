@@ -6,7 +6,7 @@ import (
 
 // Message chat message
 type Message struct {
-	ID      int
+	ID      string
 	Text    string
 	Created time.Time
 	ChatID  int

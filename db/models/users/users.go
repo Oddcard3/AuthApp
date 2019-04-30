@@ -40,14 +40,20 @@ func (u *User) UpdatePassword(newPassword string) error {
 }
 
 // Login checks login and password
-func Login(login string, password string) (bool, error) {
+func Login(login string, password string) (bool, int, error) {
 	rows, err := conn.Query("SELECT id from users WHERE login=$1 AND password=$2", login, password)
 	if err != nil {
-		return false, err
+		return false, 0, err
 	}
 	defer rows.Close()
 
-	return rows.Next(), nil
+	if rows.Next() {
+		var userID int
+		if err = rows.Scan(&userID); err == nil {
+			return true, userID, err
+		}
+	}
+	return false, 0, nil
 }
 
 // SetConn sets DB connection

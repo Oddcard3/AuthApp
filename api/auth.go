@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -56,7 +57,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	authOk, err := users.Login(req.Login, req.Password)
+	authOk, userID, err := users.Login(req.Login, req.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -68,7 +69,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, tokenErr := createSession(req.Login)
+	token, tokenErr := createSession(strconv.Itoa(userID))
 	if tokenErr != nil {
 		http.Error(w, tokenErr.Error(), http.StatusInternalServerError)
 		return
